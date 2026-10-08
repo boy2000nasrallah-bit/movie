@@ -1,0 +1,95 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cinematic Frame",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://YOUR-SERVICE.onrender.com"
+    }
+  ],
+  "paths": {
+    "/posters": {
+      "post": {
+        "operationId": "createPoster",
+        "summary": "Compose full movie frame and authentic transparent logo as a 2000x2800 poster",
+        "description": "Requires original frame first and transparent logo second, or a verified image.tmdb.org logo_url. No AI outpainting.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "openaiFileIdRefs",
+                  "movie_title"
+                ],
+                "properties": {
+                  "openaiFileIdRefs": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "minItems": 1,
+                    "maxItems": 2,
+                    "description": "Send the uploaded movie frame FIRST and transparent title logo SECOND if available. Runtime expands file references into download objects."
+                  },
+                  "movie_title": {
+                    "type": "string"
+                  },
+                  "logo_url": {
+                    "type": "string",
+                    "description": "Verified transparent PNG/WebP logo URL hosted at image.tmdb.org. Omit if uploaded logo is second file."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exact dimensions and temporary poster download URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "poster_url": {
+                      "type": "string"
+                    },
+                    "width": {
+                      "type": "integer"
+                    },
+                    "height": {
+                      "type": "integer"
+                    },
+                    "aspect_ratio": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing or invalid transparent logo"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
